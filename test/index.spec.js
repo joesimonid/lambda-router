@@ -622,3 +622,156 @@ test('route normalizes headers with an option', async t => {
     'POST'
   )
 })
+
+test('method is found in event property', async t => {
+  t.plan(1)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  let result = await router.route({ method: 'POST' }, {}, '/route')
+  t.is(result.response.body, '{"foo":"bar"}', 'method was found in event')
+})
+
+test('method is found in event httpMethod property', async t => {
+  t.plan(1)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  let result = await router.route({ httpMethod: 'POST' }, {}, '/route')
+  t.is(result.response.body, '{"foo":"bar"}', 'method was found in event')
+})
+
+test('method is found in event requestContext property', async t => {
+  t.plan(1)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  let result = await router.route(
+    {
+      requestContext: {
+        http: {
+          method: 'POST'
+        }
+      }
+    },
+    {},
+    '/route'
+  )
+  t.is(result.response.body, '{"foo":"bar"}', 'method was found in requestContext')
+})
+
+test('error is thrown if method is not found', async t => {
+  t.plan(2)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  const error = await t.throwsAsync(
+    router.route(
+      {
+        requestContext: {}
+      },
+      {},
+      '/route'
+    )
+  )
+  t.is(error.message, 'No method property was found in the event', 'The proper error bubbled up.')
+})
+
+test('error is thrown if method is not found in requestContext property', async t => {
+  t.plan(2)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  const error = await t.throwsAsync(
+    router.route(
+      {
+        requestContext: {
+          http: {}
+        }
+      },
+      {},
+      '/route'
+    )
+  )
+  t.is(error.message, 'No method property was found in the event', 'The proper error bubbled up.')
+})
+
+test('request path is found in event property', async t => {
+  t.plan(1)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  let result = await router.route({ method: 'POST', path: '/route' }, {})
+  t.is(result.response.body, '{"foo":"bar"}', 'method was found in event')
+})
+
+test('request path is found in event resourcePath property', async t => {
+  t.plan(1)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  let result = await router.route({ httpMethod: 'POST', resourcePath: '/route' }, {})
+  t.is(result.response.body, '{"foo":"bar"}', 'method was found in event')
+})
+
+test('request path is found in event resource property', async t => {
+  t.plan(1)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  let result = await router.route({ httpMethod: 'POST', resource: '/route' }, {})
+  t.is(result.response.body, '{"foo":"bar"}', 'method was found in event')
+})
+
+test('request path is found in event requestContext property', async t => {
+  t.plan(1)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  let result = await router.route(
+    {
+      requestContext: {
+        http: {
+          method: 'POST',
+          path: '/route'
+        }
+      }
+    },
+    {}
+  )
+  t.is(result.response.body, '{"foo":"bar"}', 'method was found in requestContext')
+})
+
+test('error is thrown if request path is not found', async t => {
+  t.plan(2)
+  let router = Router()
+  router.post('/route', () => {
+    return { foo: 'bar' }
+  })
+  const error = await t.throwsAsync(
+    router.route(
+      {
+        requestContext: {
+          http: {
+            method: 'POST'
+          }
+        }
+      },
+      {}
+    )
+  )
+  t.is(
+    error.message,
+    'No request path property was found in the event',
+    'The proper error bubbled up.'
+  )
+})

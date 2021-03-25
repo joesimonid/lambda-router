@@ -19,7 +19,7 @@
     "test:coverage:open": "npm run test:coverage; npm run report:open",
     "report": "nyc report --reporter=html",
     "report:open": "npm run report && open coverage/index.html",
-    "test:ci": "npm run check && ava --tap | tap-xunit > ~/reports/ava.xml && npm run test:coverage && npm run report:ci",
+    "test:ci": "npm run check && ava --tap | tap-xunit > ~/reports/ava.xml && npm run test:coverage && npm run report",
     "style": "prettier --config package.json  --write \"{src,test}/**/*.js\"",
     "jsdoc:generate": "jsdoc ./src/index.js -d ./docs/"
   },

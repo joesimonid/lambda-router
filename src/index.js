@@ -78,8 +78,8 @@ function Router({
     }
 
     // Allow method and path overrides
-    httpMethod = httpMethod || event.method || event.httpMethod
-    requestPath = requestPath || event.path || event.resourcePath || event.resource
+    httpMethod = getMethod(httpMethod, event)
+    requestPath = getRequestPath(requestPath, event)
 
     if (trimTrailingSlash) {
       requestPath = requestPath.replace(/\/$/, '')
@@ -305,4 +305,32 @@ function normalizeRequestHeaders(reqHeaders = {}) {
     headers[name.toLowerCase()] = reqHeaders[name]
     return headers
   }, {})
+}
+
+function getMethod(httpMethod, event) {
+  let method = httpMethod || event.method || event.httpMethod
+
+  if (!method && event.requestContext && event.requestContext.http) {
+    method = event.requestContext.http.method
+  }
+
+  if (!method) {
+    throw new Error('No method property was found in the event')
+  }
+
+  return method
+}
+
+function getRequestPath(requestPath, event) {
+  let path = requestPath || event.path || event.resourcePath || event.resource
+
+  if (!path && event.requestContext && event.requestContext.http) {
+    path = event.requestContext.http.path
+  }
+
+  if (!path) {
+    throw new Error('No request path property was found in the event')
+  }
+
+  return path
 }
